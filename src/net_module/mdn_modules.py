@@ -15,15 +15,13 @@ class ClassicMixtureDensityModule(nn.Module):
 
         self.layer_mapping = nn.Linear(dim_input, (2*dim_output+1)*num_components)
         self.layer_alpha = nn.Softmax(dim=1) # If 1, go along each row
-        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         self.p = self.layer_mapping(x)
         self.p.retain_grad()
         self.alpha = self.layer_alpha(self.p[:,:self.M])
         self.mu    = self.p[:, self.M:(self.dim_output+1)*self.M]
-        self.sigma =(self.p[:, (self.dim_output+1)*self.M:])
-        self.sigma = self.sigmoid(self.sigma) * 1 # sigmoid
+        self.sigma = torch.exp(self.p[:, (self.dim_output+1)*self.M:])
         self.mu    = self.mu.view(-1, self.M, self.dim_output)
         self.sigma = self.sigma.view(-1, self.M, self.dim_output)
         return self.alpha, self.mu, self.sigma
@@ -36,6 +34,7 @@ class ClassicMixtureDensityModule(nn.Module):
     #     mu    = mu.view(-1, self.M, self.dim_output)
     #     sigma = sigma.view(-1, self.M, self.dim_output)
     #     return alpha, mu, sigma
+
 
 class HeuristicMixtureDensityModule(nn.Module):
     def __init__(self, dim_input, dim_output, num_components):
@@ -50,19 +49,15 @@ class HeuristicMixtureDensityModule(nn.Module):
 
     def forward(self, x):
         p = self.layer_mapping(x)
-        # h = torch.max(p[:,:self.M], axis=1).values.unsqueeze(1)
-        pre_bad = p[:,:self.M]
-        pre_alpha = self.sigmoid(p[:,:self.M])
-        # pre_alpha = torch.sub(p[:,:self.M], torch.max(p[:,:self.M], axis=1).values.unsqueeze(1))
+        pre_alpha = torch.sub(p[:,:self.M], torch.max(p[:,:self.M], axis=1).values.unsqueeze(1))
 
         alpha = self.layer_alpha(pre_alpha) # heuristics 1
-        alpha0 = self.layer_alpha(p[:,:self.M])
-
         mu    = p[:,self.M:(self.dim_output+1)*self.M]
         sigma = self.sigmoid(p[:, (self.dim_output+1)*self.M:])  # heuristics 2
         mu    = mu.view(-1, self.M, self.dim_output)
         sigma = sigma.view(-1, self.M, self.dim_output)
         return alpha, mu, sigma
+
 
 class SoftSigmaMixtureDensityModule(nn.Module):
     def __init__(self, dim_input, dim_output, num_components):
@@ -83,6 +78,7 @@ class SoftSigmaMixtureDensityModule(nn.Module):
         mu    = mu.view(-1, self.M, self.dim_output)
         sigma = sigma.view(-1, self.M, self.dim_output)
         return alpha, mu, sigma
+
 
 class SplitMixtureDensityModule(nn.Module):
     def __init__(self, dim_input, dim_output, num_components):
