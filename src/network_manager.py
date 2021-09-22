@@ -81,6 +81,7 @@ class NetworkManager():
         min_val_loss_epoch = np.Inf
         epochs_no_improve = 0
         cnt = 0 # counter for batches over all epochs
+        self.epoch_nodes = []
         for ep in range(epoch):
             cnt_per_epoch = 0 # counter for batches within the epoch
 
@@ -90,6 +91,7 @@ class NetworkManager():
             else:
                 loss_epoch = self.loss_function
 
+            self.epoch_nodes.append(cnt)
             while (cnt_per_epoch<max_cnt_per_epoch):
                 cnt += 1
                 cnt_per_epoch += 1
@@ -158,6 +160,7 @@ class NetworkManager():
 
     def plot_history_loss(self):
         plt.figure()
+        plt.plot(self.epoch_nodes, np.array(self.Loss)[self.epoch_nodes], 'r|', markersize=20)
         plt.plot(np.linspace(1,len(self.Loss),len(self.Loss)), self.Loss, '.', label='loss')
         if len(self.Val_loss):
             plt.plot(np.array(self.Val_loss)[:,0], np.array(self.Val_loss)[:,1], '.', label='val_loss')
