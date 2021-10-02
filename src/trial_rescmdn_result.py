@@ -11,7 +11,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import transforms
 
-from net_module.trial3_cmdn_module import ConvMDN
+from net_module.trial_cmdn_module import ConvMDN
 from net_module.loss_functions import loss_NLL, loss_MAE
 from network_manager import NetworkManager
 
@@ -24,12 +24,14 @@ print("Program: animation\n")
 input_channel = 4
 dim_output = 2
 num_components = 2
-fc_input = 182528
+fc_input = 98304
 
-model_path = os.path.join(Path(__file__).parent.parent, 'Model/trial3_model')
-csv_path   = os.path.join(Path(__file__).parent.parent, 'Data/SimpleAvoidTwoModeOneChannel/all_data.csv')
-data_dir   = os.path.join(Path(__file__).parent.parent, 'Data/SimpleAvoidTwoModeOneChannel/')
+model_path = os.path.join(Path(__file__).parent.parent, 'Model/new')
+csv_path   = os.path.join(Path(__file__).parent.parent, 'Data/SimpleAvoid2m1cUB/all_data.csv')
+data_dir   = os.path.join(Path(__file__).parent.parent, 'Data/SimpleAvoid2m1cUB/')
 
+# idx_start = 100
+# idx_end = 227
 idx_start = 0
 idx_end = 127
 pause_time = 0.1
@@ -60,13 +62,13 @@ for idx in idc:
     graph.plot_map(ax, clean=1)
     
     img   = dataset[idx]['image']
-    label = dataset[idx]['label']
+    label = dataset[idx]['label'] * 1
     traj  = np.array(dataset[idx]['traj'])
 
     alp, mu, sigma = model(img.unsqueeze(0).float().cuda())
 
     alp = alp[0].cpu().detach().numpy()
-    mu  = mu[0].cpu().detach().numpy()
+    mu  = mu[0].cpu().detach().numpy() * 1
     sigma = sigma[0].cpu().detach().numpy()
 
     plt.plot(traj[-1,0], traj[-1,1], 'ko', label='current')
@@ -74,6 +76,8 @@ for idx in idc:
     plt.plot(label[0], label[1], 'bo', label="ground truth")
     plt.plot(mu[0,0],   mu[0,1],   'rx', label="estimation")
     plt.plot(mu[1,0],   mu[1,1],   'rx', label="estimation")
+    plt.text(mu[0,0],   mu[0,1],str(round(alp[0],2)),fontsize=20)
+    plt.text(mu[1,0],   mu[1,1],str(round(alp[1],2)),fontsize=20)
     plt.xlabel("x [m]", fontsize=14)
     plt.ylabel("y [m]", fontsize=14)
     plt.legend()

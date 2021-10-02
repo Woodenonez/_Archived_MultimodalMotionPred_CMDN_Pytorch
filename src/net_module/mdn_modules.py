@@ -53,7 +53,7 @@ class HeuristicMixtureDensityModule(nn.Module):
 
         alpha = self.layer_alpha(pre_alpha) # heuristics 1
         mu    = p[:,self.M:(self.dim_output+1)*self.M]
-        sigma = self.sigmoid(p[:, (self.dim_output+1)*self.M:])  # heuristics 2
+        sigma = self.sigmoid(p[:, (self.dim_output+1)*self.M:]) * 1  # heuristics 2
         mu    = mu.view(-1, self.M, self.dim_output)
         sigma = sigma.view(-1, self.M, self.dim_output)
         return alpha, mu, sigma

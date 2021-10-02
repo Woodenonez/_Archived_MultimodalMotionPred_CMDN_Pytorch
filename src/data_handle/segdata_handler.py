@@ -161,28 +161,6 @@ class ImageStackDataset(Dataset):
         image = self.togray(io.imread(img_path))
         return image.shape
 
-class FactoryTrafficDataset(ImageStackDataset):
-    def __init__(self, csv_path, root_dir, channel_per_image=2, transform=None, T_channel=True):
-        self.info_frame = pd.read_csv(csv_path)
-        self.root_dir = root_dir
-        self.tr = transform
-        self.with_T = T_channel
-        self.cpi = channel_per_image
-
-        self.nc = len(list(self.info_frame))-3 # number of image channels in total
-        self.img_shape = self.check_img_shape()
-
-class SimpleAvoidDataset(ImageStackDataset):
-    def __init__(self, csv_path, root_dir, channel_per_image=1, transform=None, T_channel=True):
-        self.info_frame = pd.read_csv(csv_path)
-        self.root_dir = root_dir
-        self.tr = transform
-        self.with_T = T_channel
-        self.cpi = channel_per_image
-
-        self.nc = len(list(self.info_frame))-3 # number of image channels in total
-        self.img_shape = self.check_img_shape()
-
 
 class Rescale(object):
     def __init__(self, output_size, tolabel=False):

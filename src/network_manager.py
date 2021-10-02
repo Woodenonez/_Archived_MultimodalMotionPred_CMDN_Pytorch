@@ -52,8 +52,6 @@ class NetworkManager():
         if not val:
             self.record_mdn_tracker(outputs)
         loss = loss_function(outputs, labels)
-        # if not val:
-        #     print(loss)
         return loss
 
     def train_batch(self, batch, label, loss_function):
@@ -62,15 +60,6 @@ class NetworkManager():
         loss.backward()
         self.optimizer.step()
         self.lr_scheduler.step()
-
-        # print(self.net.mdn.layer_mapping.weight.grad)
-        # print(self.net.mdn.p)
-        # print(self.net.mdn.mu.grad)
-        # print(self.net.mdn.sigma.grad)
-        # weight_map = self.get_parameter_map(self.net.mdn.layer_mapping.weight.grad)
-        # p_grad = self.get_parameter_map(self.net.mdn.p.grad)
-        # p_map = self.get_parameter_map(self.net.mdn.p)
-
         return loss
 
     def train(self, data_handler, batch_size, epoch, val_after_batch=1):
@@ -85,11 +74,11 @@ class NetworkManager():
         for ep in range(epoch):
             cnt_per_epoch = 0 # counter for batches within the epoch
 
-            # loss_epoch = self.loss_function0
-            if ep < 2:
-                loss_epoch = self.loss_function0
-            else:
-                loss_epoch = self.loss_function
+            loss_epoch = self.loss_function
+            # if ep < 2:
+            #     loss_epoch = self.loss_function0
+            # else:
+            #     loss_epoch = self.loss_function
 
             self.epoch_nodes.append(cnt)
             while (cnt_per_epoch<max_cnt_per_epoch):
@@ -131,7 +120,7 @@ class NetworkManager():
                     if val_loss < min_val_loss_epoch:
                         min_val_loss_epoch = val_loss
 
-                if np.isnan(loss.item()): # assert(~np.isnan(loss.item())),("Loss goes to NaN!")
+                if np.isnan(loss.item()):
                     print(f"Loss goes to NaN! Fail after {cnt} batches.")
                     self.complete = False
                     return
