@@ -32,12 +32,12 @@ fc_input = 98304
 
 epoch = 10
 validation_prop = 0.2
-batch_size = 10
+batch_size = 100
 early_stopping = 5
 
-save_path = os.path.join(Path(__file__).parent.parent, 'Model/new') # if None, don't save
-csv_path  = os.path.join(Path(__file__).parent.parent, 'Data/SimpleAvoid2m1cBig/all_data.csv')
-data_dir  = os.path.join(Path(__file__).parent.parent, 'Data/SimpleAvoid2m1cBig/')
+save_path = os.path.join(Path(__file__).resolve().parents[1], 'Model/new') # if None, don't save
+csv_path  = os.path.join(Path(__file__).resolve().parents[1], 'Data/SimpleAvoid2m1c/all_data.csv')
+data_dir  = os.path.join(Path(__file__).resolve().parents[1], 'Data/SimpleAvoid2m1c/')
 
 ### Prepare data
 composed = transforms.Compose([ToTensor()])

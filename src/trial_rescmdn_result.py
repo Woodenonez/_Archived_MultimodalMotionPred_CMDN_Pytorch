@@ -26,9 +26,9 @@ dim_output = 2
 num_components = 2
 fc_input = 98304
 
-model_path = os.path.join(Path(__file__).parent.parent, 'Model/new')
-csv_path   = os.path.join(Path(__file__).parent.parent, 'Data/SimpleAvoid2m1cUB/all_data.csv')
-data_dir   = os.path.join(Path(__file__).parent.parent, 'Data/SimpleAvoid2m1cUB/')
+model_path = os.path.join(Path(__file__).resolve().parents[1], 'Model/new')
+csv_path   = os.path.join(Path(__file__).resolve().parents[1], 'Data/SimpleAvoid2m1c/all_data.csv')
+data_dir   = os.path.join(Path(__file__).resolve().parents[1], 'Data/SimpleAvoid2m1c/')
 
 # idx_start = 100
 # idx_end = 227
