@@ -53,6 +53,7 @@ def loss_NLL(x, data):
 
 def loss_adaptive_NLL(x, data):
     sfx = nn.Softmax()
+    mu, sigma = x[0], x[1]
     prob = cal_GauProb(mu, sigma, data) # (BxG)
     adaptive_alpha = sfx(prob)
     x.insert(0, adaptive_alpha)
