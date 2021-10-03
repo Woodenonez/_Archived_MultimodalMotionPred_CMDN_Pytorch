@@ -27,37 +27,14 @@ class AdaptiveMixtureDensityModule(nn.Module):
         # self.sigma = self.sigma.view(-1, self.M, self.dim_output)
         # return self.alpha, self.mu, self.sigma
 
-    def forward(self, x, data):
-        # data is the GT
+    def forward(self, x):
         p = self.layer_mapping(x)
         mu    = p[:,:self.dim_output*self.M]
         sigma = self.sigmoid(p[:, self.dim_output*self.M:])
 
-        prob = self.cal_GauProb(mu, sigma, data) # (BxG)
-        adaptive_alpha = self.sfx(prob)
-
         mu    = mu.view(-1, self.M, self.dim_output)
         sigma = sigma.view(-1, self.M, self.dim_output)
-        return adaptive_alpha, mu, sigma
-
-    def cal_GauProb(self, mu, sigma, data):
-        """
-        Return the probability of "data" given MoG parameters "mu" and "sigma".
-        
-        Arguments:
-            mu    (BxGxC) - The means of the Gaussians. 
-            sigma (BxGxC) - The standard deviations of the Gaussians.
-            data  (BxC)   - A batch of data points (coordinates of position).
-
-        Return:
-            probabilities (BxG): The probability of each point in the probability
-                of the distribution in the corresponding mu/sigma index.
-                (Assume the dimensions of the output are independent to each other.)
-        """
-        x = x.unsqueeze(1).expand_as(mu) # BxC -> Bx1xC -> BxGxC
-        prob = torch.rsqrt(torch.tensor(2*math.pi)) * torch.exp(-((x - mu) / sigma)**2 / 2) / sigma
-        return torch.prod(prob, dim=2) # overall probability for all output's dimensions in each component, BxG 
-
+        return mu, sigma
 
 
 class ReExp_Layer(nn.Module):

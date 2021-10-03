@@ -51,6 +51,13 @@ def loss_NLL(x, data):
     nll = -torch.log(cal_multiGauProb(alp, mu, sigma, data) + 1e-6)
     return torch.mean(nll)  #+ 2*torch.linalg.norm(alp_avg) #+ torch.linalg.norm(sigma_avg)
 
+def loss_adaptive_NLL(x, data):
+    sfx = nn.Softmax()
+    prob = cal_GauProb(mu, sigma, data) # (BxG)
+    adaptive_alpha = sfx(prob)
+    x.insert(0, adaptive_alpha)
+    return loss_NLL(x, data)
+
 def loss_NLL_fix(x, data):
     alp, mu, sigma = x[0], x[1], x[2]
     alp_fix = (torch.ones(alp.shape)/alp.shape[1]).cuda()
